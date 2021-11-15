@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,7 +10,9 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
-import withAddName from './with-add-name.js';
+import { connect } from 'react-redux';
+import { Operation } from './reducer.js';
+import getGender from './selectors.js';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,9 +51,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const App = ({onSubmitForm, onChange, gender}) => {
-
+const App = ({gender, loadName}) => {
+console.log(gender)
     const classes = useStyles();
+
+    const [inputValue, setInputValue] = useState();
 
     return (
         <div className={classes.appBackground}>
@@ -66,17 +70,17 @@ const App = ({onSubmitForm, onChange, gender}) => {
                 <div className={classes.drawerHeader}/>
                 <Container>
                     <Card className={classes.cardPage}>
-                        <form onSubmit={(evt) => {
-                                evt.preventDefault();
-                                onSubmitForm();
-                                evt.target.reset();
-                                }} 
-                                className={classes.formPage} noValidate autoComplete="off">
+                        <form className={classes.formPage} noValidate autoComplete="off">
                             <CardContent>
-                                <TextField onChange={onChange} className={classes.formInput} id="filled-basic" label="Введи свое транслитерированое имя (Латиницей)" variant="filled"/>
+                                <TextField onChange={(evt) => {
+                                    setInputValue(evt.target.value);
+                                }} className={classes.formInput} id="filled-basic" label="Введи свое транслитерированое имя (Латиницей)" variant="filled" />
                             </CardContent>
                             <CardActions>
-                                <Button variant="contained" color="primary">
+                                <Button onClick={(evt) => {
+                                    evt.preventDefault();
+                                    loadName(inputValue);
+                                }} variant="contained" color="primary">
                                     Узнать пол
                                 </Button>
                             </CardActions>
@@ -106,4 +110,14 @@ const App = ({onSubmitForm, onChange, gender}) => {
     );
 }
 
-export default withAddName(App);
+const mapStateToProps = (state) => ({
+    gender: getGender(state)
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    loadName(data) {
+        dispatch(Operation.loadName(data));
+    }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

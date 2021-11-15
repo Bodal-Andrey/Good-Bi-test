@@ -19,10 +19,13 @@ const ActionCreator = {
 
 const Operation = {
     loadName: (name) => (dispatch, getState, api) => {
-        return api.get(`${name}`)
+        return api.get(`api.genderize.io?name=${name}`)
             .then((data) => {
-                console.log(data)
-                dispatch(ActionCreator.genderChange(data.gender));
+                if (data.data.name === 'undefined') {
+                    dispatch(ActionCreator.genderChange(''));
+                } else {
+                    dispatch(ActionCreator.genderChange(data.data.gender));
+                }
             });
     }
 };

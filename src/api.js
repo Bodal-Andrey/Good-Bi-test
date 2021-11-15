@@ -2,9 +2,9 @@ import axios from "axios";
 
 const createApi = () => {
   const api = axios.create({
-    baseURL: `https://api.genderize.io?name=`,
+    baseURL: `https:/`,
     timeout: 5000,
-    withCredentials: true,
+    withCredentials: false,
   });
 
   const onSuccess = (response) => {
